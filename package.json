@@ -1,0 +1,48 @@
+{
+  "name": "heima-billing",
+  "private": true,
+  "version": "0.1.0",
+  "description": "黑马记账 - 跨平台桌面记账应用",
+  "main": "./out/main/index.js",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:linux": "npm run build && electron-builder --linux",
+    "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "pack:win": "npm run build && electron-builder --win --dir"
+  },
+  "dependencies": {
+    "@electron-toolkit/utils": "^4.0.0",
+    "@element-plus/icons-vue": "^2.3.2",
+    "better-sqlite3": "^12.11.1",
+    "dayjs": "^1.11.21",
+    "echarts": "^6.1.0",
+    "element-plus": "^2.14.3",
+    "pinia": "^2.3.1",
+    "vue": "^3.5.39",
+    "vue-echarts": "^8.0.1",
+    "vue-router": "^4.6.4"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true,
+    "vue-demi@0.14.10": true
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "electron": "^43.1.1",
+    "electron-builder": "^26.15.3",
+    "electron-icon-builder": "^2.0.1",
+    "electron-vite": "^5.0.0",
+    "sass": "^1.101.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.4",
+    "vue-tsc": "^3.3.7"
+  }
+}

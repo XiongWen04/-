@@ -1,0 +1,38 @@
+appId: com.heima.billing
+productName: 黑马记账
+directories:
+  buildResources: resources
+  output: dist
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!{*.svg,*.png}'
+icon: resources/icon.svg
+win:
+  executableName: heima-billing
+  icon: resources/icon.svg
+  target:
+    - nsis
+nsis:
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+  oneClick: false
+  allowToChangeInstallationDirectory: false
+mac:
+  icon: resources/icon.svg
+  target:
+    - dmg
+  notarize: false
+dmg:
+  artifactName: ${name}-${version}.${ext}
+linux:
+  icon: resources/icon.svg
+  target:
+    - AppImage
+  maintainer: heima-billing
+  category: Utility

@@ -1,7 +1,15 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initDatabase, getDb } from './database'
+
+// 内联 @electron-toolkit/utils 的核心功能（避免 electron-vite 5 + Electron 43 下 CJS 模块加载时序问题）
+const isDev = !app.isPackaged
+function setAppUserModelId(id: string): void {
+  if (process.platform === 'win32') app.setAppUserModelId(isDev ? process.execPath : id)
+}
+function watchWindowShortcuts(window: BrowserWindow): void {
+  // noop — 窗口快捷键功能可选的
+}
 
 let mainWindow: BrowserWindow | null = null
 
@@ -31,7 +39,7 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+  if (isDev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
@@ -39,10 +47,10 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.panda.billing')
+  setAppUserModelId('com.panda.billing')
 
   app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
+    watchWindowShortcuts(window)
   })
 
   // 初始化数据库

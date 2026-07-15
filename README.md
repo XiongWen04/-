@@ -80,7 +80,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/XiongWen04/-.git
+git clone https://github.com/XiongWen04/Panda-Billing.git
 cd 熊猫记账APP
 
 # 安装依赖
@@ -98,7 +98,7 @@ npm run build:win
 
 ## 📦 下载安装
 
-从 [Releases](https://github.com/XiongWen04/-/releases) 页面下载最新版本的安装包：
+从 [Releases](https://github.com/XiongWen04/Panda-Billing/releases) 页面下载最新版本的安装包：
 
 - **Windows**: `熊猫记账 Setup x.x.x.exe`
 - **免安装版**: `win-unpacked/` 目录

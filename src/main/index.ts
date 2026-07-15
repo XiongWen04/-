@@ -13,7 +13,7 @@ function createWindow(): void {
     minHeight: 600,
     show: false,
     autoHideMenuBar: true,
-    title: '黑马记账',
+    title: '熊猫记账',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -39,7 +39,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.heima.billing')
+  electronApp.setAppUserModelId('com.panda.billing')
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
@@ -103,6 +103,22 @@ function registerIpcHandlers(): void {
       const parent = db.prepare('SELECT type FROM categories WHERE id = ?').get(category.parent_id) as any
       type = parent?.type || 'expense'
     }
+
+    // 同名校验
+    if (category.parent_id) {
+      // 二级分类：同级下名称不能重复
+      const sibling = db.prepare('SELECT id FROM categories WHERE parent_id = ? AND name = ?').get(category.parent_id, category.name) as any
+      if (sibling) {
+        throw new Error(`子分类「${category.name}」已存在`)
+      }
+    } else {
+      // 一级分类：同类型下名称不能重复
+      const sameName = db.prepare('SELECT id FROM categories WHERE parent_id IS NULL AND name = ? AND type = ?').get(category.name, type) as any
+      if (sameName) {
+        throw new Error(`一级分类「${category.name}」已存在`)
+      }
+    }
+
     const stmt = db.prepare('INSERT INTO categories (name, parent_id, icon, sort_order, type) VALUES (?, ?, ?, ?, ?)')
     const result = stmt.run(category.name, category.parent_id, category.icon, category.sort_order, type)
     return { id: result.lastInsertRowid, ...category, type }
@@ -122,20 +138,29 @@ function registerIpcHandlers(): void {
 
   // 删除分类
   ipcMain.handle('db:deleteCategory', (_event, id: number) => {
-    // 如果有子分类或关联的记录则不允许删除
-    const childCount = db.prepare('SELECT COUNT(*) as count FROM categories WHERE parent_id = ?').get(id) as any
-    if (childCount.count > 0) {
-      throw new Error('该分类下有子分类，无法删除')
+    const cat = db.prepare('SELECT * FROM categories WHERE id = ?').get(id) as any
+    if (!cat) throw new Error('分类不存在')
+
+    if (!cat.parent_id) {
+      // 一级分类：检查所有子分类是否有关联记录
+      const children = db.prepare('SELECT id FROM categories WHERE parent_id = ?').all(id) as any[]
+      for (const child of children) {
+        const expenseCount = db.prepare('SELECT COUNT(*) as count FROM expenses WHERE category_id = ?').get(child.id) as any
+        if (expenseCount.count > 0) throw new Error('该分类下有子分类关联了花销记录，请先删除相关记录')
+        const incomeCount = db.prepare('SELECT COUNT(*) as count FROM incomes WHERE category_id = ?').get(child.id) as any
+        if (incomeCount.count > 0) throw new Error('该分类下有子分类关联了收入记录，请先删除相关记录')
+      }
+      // 先删除所有子分类，再删除自己
+      db.prepare('DELETE FROM categories WHERE parent_id = ?').run(id)
+      db.prepare('DELETE FROM categories WHERE id = ?').run(id)
+    } else {
+      // 二级分类：检查是否有记录
+      const expenseCount = db.prepare('SELECT COUNT(*) as count FROM expenses WHERE category_id = ?').get(id) as any
+      if (expenseCount.count > 0) throw new Error('该分类下有花销记录，无法删除')
+      const incomeCount = db.prepare('SELECT COUNT(*) as count FROM incomes WHERE category_id = ?').get(id) as any
+      if (incomeCount.count > 0) throw new Error('该分类下有收入记录，无法删除')
+      db.prepare('DELETE FROM categories WHERE id = ?').run(id)
     }
-    const expenseCount = db.prepare('SELECT COUNT(*) as count FROM expenses WHERE category_id = ?').get(id) as any
-    if (expenseCount.count > 0) {
-      throw new Error('该分类下有花销记录，无法删除')
-    }
-    const incomeCount = db.prepare('SELECT COUNT(*) as count FROM incomes WHERE category_id = ?').get(id) as any
-    if (incomeCount.count > 0) {
-      throw new Error('该分类下有收入记录，无法删除')
-    }
-    db.prepare('DELETE FROM categories WHERE id = ?').run(id)
   })
 
   // === 花销相关 ===
@@ -420,7 +445,7 @@ function registerIpcHandlers(): void {
     const path = require('path')
     const { app: app2 } = require('electron')
     const dbPath = path.join(app2.getPath('userData'), 'billing.db')
-    const backupDir = path.join(app2.getPath('documents'), '黑马记账备份')
+    const backupDir = path.join(app2.getPath('documents'), '熊猫记账备份')
     if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true })
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
     const backupPath = path.join(backupDir, `billing-backup-${timestamp}.db`)

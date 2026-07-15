@@ -1,5 +1,5 @@
-appId: com.heima.billing
-productName: 黑马记账
+appId: com.panda.billing
+productName: 熊猫记账
 directories:
   buildResources: resources
   output: dist
@@ -10,10 +10,10 @@ files:
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   - '!{*.svg,*.png}'
-icon: resources/icon.svg
+icon: resources/icon.png
 win:
-  executableName: heima-billing
-  icon: resources/icon.svg
+  executableName: panda-billing
+  icon: resources/icon.png
   target:
     - nsis
 nsis:
@@ -24,15 +24,15 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: false
 mac:
-  icon: resources/icon.svg
+  icon: resources/icon.png
   target:
     - dmg
   notarize: false
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:
-  icon: resources/icon.svg
+  icon: resources/icon.png
   target:
     - AppImage
-  maintainer: heima-billing
+  maintainer: panda-billing
   category: Utility

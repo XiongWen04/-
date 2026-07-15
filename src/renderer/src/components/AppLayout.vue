@@ -3,7 +3,7 @@
     <!-- 侧边栏 -->
     <el-aside width="200px" class="app-sidebar">
       <div class="sidebar-header">
-        <h1 class="app-logo">🐴 黑马记账</h1>
+        <h1 class="app-logo">🐼 熊猫记账</h1>
         <p class="app-subtitle">管好你的每一笔收支</p>
       </div>
       <el-menu
@@ -42,18 +42,20 @@
         <el-button
           type="primary"
           size="small"
-          style="width: 100%; margin-bottom: 8px;"
+          class="sidebar-btn"
           @click="$router.push('/add')"
         >
-          <el-icon><Top /></el-icon> 记一笔支出
+          <span class="btn-icon">↑</span>
+          <span>记一笔支出</span>
         </el-button>
         <el-button
           type="success"
           size="small"
-          style="width: 100%;"
+          class="sidebar-btn"
           @click="$router.push('/add?type=income')"
         >
-          <el-icon><Bottom /></el-icon> 记一笔收入
+          <span class="btn-icon">↑</span>
+          <span>记一笔收入</span>
         </el-button>
       </div>
     </el-aside>
@@ -100,7 +102,24 @@ const activeMenu = computed(() => route.path)
 }
 
 .sidebar-footer {
-  padding: 12px;
+  padding: 10px 12px;
   border-top: 1px solid #e4e7ed;
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+}
+
+.sidebar-btn {
+  flex: 1 !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 6px 4px !important;
+  font-size: 12px !important;
+}
+
+.btn-icon {
+  margin-right: 3px;
+  font-size: 13px;
 }
 </style>

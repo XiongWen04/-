@@ -17,10 +17,10 @@ export const useCategoryStore = defineStore('category', () => {
   }
 
   // 添加分类
-  async function addCategory(category: { name: string; parent_id: number | null; icon: string; sort_order: number }) {
-    // 如果有父分类，获取父分类的 type 传给后端
-    let type: string | undefined
-    if (category.parent_id) {
+  async function addCategory(category: { name: string; parent_id: number | null; icon: string; sort_order: number; type?: string }) {
+    // 如果有父分类，从父分类继承 type
+    let type: string | undefined = category.type
+    if (!type && category.parent_id) {
       const parent = categories.value.find(c => c.id === category.parent_id)
       type = parent?.type
     }

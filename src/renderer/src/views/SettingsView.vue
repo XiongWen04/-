@@ -6,9 +6,9 @@
 
     <!-- 关于 -->
     <div class="page-card">
-      <h3 style="font-size: 15px; color: #303133; margin-bottom: 16px;">关于黑马记账</h3>
+      <h3 style="font-size: 15px; color: #303133; margin-bottom: 16px;">关于熊猫记账</h3>
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="应用名称">黑马记账</el-descriptions-item>
+        <el-descriptions-item label="应用名称">熊猫记账</el-descriptions-item>
         <el-descriptions-item label="版本">v0.1.0</el-descriptions-item>
         <el-descriptions-item label="技术栈">Electron + Vue 3 + SQLite</el-descriptions-item>
         <el-descriptions-item label="说明">本地记账应用，数据存储在你的电脑上，无需联网，隐私安全。</el-descriptions-item>

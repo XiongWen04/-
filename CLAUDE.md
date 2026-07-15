@@ -1,8 +1,8 @@
-# 黑马记账 APP — 产品文档
+# 熊猫记账 APP — 产品文档
 
 ## 📋 项目概述
 
-**项目名称：** 黑马记账  
+**项目名称：** 熊猫记账  
 **目标平台：** Windows & Mac（跨平台桌面应用）  
 **技术方案：** 方案 A — Electron + Vue 3 + SQLite  
 **核心功能：** 记录用户每一次花销和收入，支持两级分类管理（一级大类 → 二级小类），收支一体展示与统计
@@ -179,7 +179,7 @@
 ## 📐 项目目录结构
 
 ```
-黑马记账APP/
+熊猫记账APP/
 ├── electron.vite.config.ts          # electron-vite 配置
 ├── electron-builder.yml             # 打包配置
 ├── package.json                     # 项目配置

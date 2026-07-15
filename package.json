@@ -1,8 +1,8 @@
 {
-  "name": "heima-billing",
+  "name": "panda-billing",
   "private": true,
   "version": "0.1.0",
-  "description": "黑马记账 - 跨平台桌面记账应用",
+  "description": "熊猫记账 - 跨平台桌面记账应用",
   "main": "./out/main/index.js",
   "author": "",
   "license": "MIT",

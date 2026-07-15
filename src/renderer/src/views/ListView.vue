@@ -138,6 +138,10 @@ const allCategoryOptions = computed(() => categoryStore.getCategoryOptions())
 const combinedList = computed(() => {
   const expenses = expenseStore.expenseList.map(e => ({ ...e, _type: 'expense', _id: `e-${e.id}` }))
   const incomes = incomeStore.incomeList.map(i => ({ ...i, _type: 'income', _id: `i-${i.id}` }))
+
+  if (listType.value === 'expense') return expenses
+  if (listType.value === 'income') return incomes
+
   const all = [...expenses, ...incomes]
   all.sort((a, b) => {
     const dateCmp = b.date.localeCompare(a.date)
@@ -207,14 +211,26 @@ async function handleReset() {
 
 async function loadData() {
   const query = {
+    page: currentPage.value,
+    pageSize,
     dateFrom: filters.dateFrom || undefined,
     dateTo: filters.dateTo || undefined,
     category_id: filters.category_id
   }
   await Promise.all([
-    expenseStore.fetchExpenses(query),
-    incomeStore.fetchIncomes(query)
+    listType.value !== 'income' ? expenseStore.fetchExpenses(query) : Promise.resolve(),
+    listType.value !== 'expense' ? incomeStore.fetchIncomes(query) : Promise.resolve()
   ])
+
+  // 根据筛选类型更新总记录数
+  if (listType.value === 'expense') {
+    totalCount.value = expenseStore.totalCount
+  } else if (listType.value === 'income') {
+    totalCount.value = incomeStore.totalCount
+  } else {
+    // "全部" 模式下取两者较大值作为分页基准
+    totalCount.value = Math.max(expenseStore.totalCount, incomeStore.totalCount)
+  }
 }
 
 async function handleDelete(item: any) {

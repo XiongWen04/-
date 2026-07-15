@@ -18,7 +18,13 @@ export const useCategoryStore = defineStore('category', () => {
 
   // 添加分类
   async function addCategory(category: { name: string; parent_id: number | null; icon: string; sort_order: number }) {
-    await window.electronAPI.db.addCategory(category)
+    // 如果有父分类，获取父分类的 type 传给后端
+    let type: string | undefined
+    if (category.parent_id) {
+      const parent = categories.value.find(c => c.id === category.parent_id)
+      type = parent?.type
+    }
+    await window.electronAPI.db.addCategory({ ...category, type })
     await fetchCategories()
   }
 

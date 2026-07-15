@@ -163,36 +163,38 @@ function seedData(): void {
 }
 
 function seedIncomeData(): void {
-  const insertCategory = db.prepare("INSERT INTO categories (name, parent_id, icon, sort_order, type) VALUES (?, ?, ?, ?, 'income')")
+  const insertParent = db.prepare("INSERT INTO categories (name, parent_id, icon, sort_order, type) VALUES (?, ?, ?, ?, 'income')")
+  const insertChild = db.prepare("INSERT INTO categories (name, parent_id, icon, sort_order, type) VALUES (?, ?, ?, ?, 'income')")
 
   const transaction = db.transaction(() => {
-    const incomeCategories: { id: number; name: string; icon: string; children: { name: string; icon?: string }[] }[] = [
+    const incomeCategories: { name: string; icon: string; children: { name: string; icon?: string }[] }[] = [
       {
-        id: 101, name: '工资', icon: 'money', children: [
+        name: '工资', icon: 'money', children: [
           { name: '月薪' }, { name: '奖金' }, { name: '补贴' }, { name: '兼职' }
         ]
       },
       {
-        id: 102, name: '理财', icon: 'trend-charts', children: [
+        name: '理财', icon: 'trend-charts', children: [
           { name: '利息' }, { name: '基金' }, { name: '股票' }, { name: '理财收益' }
         ]
       },
       {
-        id: 103, name: '红包', icon: 'present', children: [
+        name: '红包', icon: 'present', children: [
           { name: '微信红包' }, { name: '节日红包' }, { name: '生日红包' }
         ]
       },
       {
-        id: 104, name: '其他', icon: 'more-filled', children: [
+        name: '其他', icon: 'more-filled', children: [
           { name: '退款' }, { name: '报销' }, { name: '其他收入' }
         ]
       }
     ]
 
     for (const cat of incomeCategories) {
-      insertCategory.run(cat.name, null, cat.icon, cat.id)
+      const result = insertParent.run(cat.name, null, cat.icon, cat.children.length)
+      const parentId = result.lastInsertRowid as number
       cat.children.forEach((child, index) => {
-        insertCategory.run(child.name, cat.id, child.icon || '', (index + 1) * 10)
+        insertChild.run(child.name, parentId, child.icon || '', (index + 1) * 10)
       })
     }
   })

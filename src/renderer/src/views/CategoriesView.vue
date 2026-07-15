@@ -90,7 +90,9 @@ function getIconComponent(iconName: string) {
   const iconMap: Record<string, string> = {
     food: 'ForkSpoon', car: 'Van', 'shopping-bag': 'ShoppingBag',
     home: 'House', camera: 'Camera', 'first-aid-kit': 'FirstAidKit',
-    reading: 'Reading', 'chat-line-square': 'ChatLineSquare', more: 'More'
+    reading: 'Reading', 'chat-line-square': 'ChatLineSquare', more: 'More',
+    money: 'Money', 'trend-charts': 'TrendCharts', present: 'Present',
+    'more-filled': 'MoreFilled'
   }
   const name = iconMap[iconName] || iconName
   return (icons as any)[name] || icons.Coin

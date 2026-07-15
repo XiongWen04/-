@@ -7,7 +7,7 @@ export interface ElectronAPI {
     getCategories: (type?: string) => Promise<any[]>
     getParentCategories: () => Promise<any[]>
     getChildCategories: (parentId: number) => Promise<any[]>
-    addCategory: (category: { name: string; parent_id: number | null; icon: string; sort_order: number }) => Promise<any>
+    addCategory: (category: { name: string; parent_id: number | null; icon: string; sort_order: number; type?: string }) => Promise<any>
     updateCategory: (id: number, data: { name?: string; icon?: string; sort_order?: number }) => Promise<void>
     deleteCategory: (id: number) => Promise<void>
     // 花销

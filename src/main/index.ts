@@ -96,10 +96,16 @@ function registerIpcHandlers(): void {
   })
 
   // 添加分类
-  ipcMain.handle('db:addCategory', (_event, category: { name: string; parent_id: number | null; icon: string; sort_order: number }) => {
-    const stmt = db.prepare('INSERT INTO categories (name, parent_id, icon, sort_order) VALUES (?, ?, ?, ?)')
-    const result = stmt.run(category.name, category.parent_id, category.icon, category.sort_order)
-    return { id: result.lastInsertRowid, ...category }
+  ipcMain.handle('db:addCategory', (_event, category: { name: string; parent_id: number | null; icon: string; sort_order: number; type?: string }) => {
+    // 如果没有传入 type，从父分类继承 type，默认为 expense
+    let type = category.type || 'expense'
+    if (!category.type && category.parent_id) {
+      const parent = db.prepare('SELECT type FROM categories WHERE id = ?').get(category.parent_id) as any
+      type = parent?.type || 'expense'
+    }
+    const stmt = db.prepare('INSERT INTO categories (name, parent_id, icon, sort_order, type) VALUES (?, ?, ?, ?, ?)')
+    const result = stmt.run(category.name, category.parent_id, category.icon, category.sort_order, type)
+    return { id: result.lastInsertRowid, ...category, type }
   })
 
   // 更新分类

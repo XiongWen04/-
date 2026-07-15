@@ -35,6 +35,10 @@
           <el-icon><Setting /></el-icon>
           <template #title>设置</template>
         </el-menu-item>
+        <el-menu-item index="/snake" style="border-top: 1px solid #f0f0f0; margin-top: 4px;">
+          <el-icon><MagicStick /></el-icon>
+          <template #title>🎮 贪吃蛇</template>
+        </el-menu-item>
       </el-menu>
 
       <!-- 快捷入口 -->
@@ -74,7 +78,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   Odometer, Plus, List, DataAnalysis,
-  FolderOpened, Setting, Top, Bottom
+  FolderOpened, Setting, MagicStick
 } from '@element-plus/icons-vue'
 
 const route = useRoute()

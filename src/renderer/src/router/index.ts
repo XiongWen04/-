@@ -42,6 +42,12 @@ const routes: RouteRecordRaw[] = [
         name: 'Settings',
         component: () => import('@/views/SettingsView.vue'),
         meta: { title: '设置' }
+      },
+      {
+        path: 'snake',
+        name: 'Snake',
+        component: () => import('@/views/SnakeGame.vue'),
+        meta: { title: '贪吃蛇' }
       }
     ]
   }

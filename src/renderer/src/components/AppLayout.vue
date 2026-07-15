@@ -4,7 +4,7 @@
     <el-aside width="200px" class="app-sidebar">
       <div class="sidebar-header">
         <h1 class="app-logo">🐴 黑马记账</h1>
-        <p class="app-subtitle">记录每一笔花销</p>
+        <p class="app-subtitle">管好你的每一笔收支</p>
       </div>
       <el-menu
         :default-active="activeMenu"
@@ -21,7 +21,7 @@
         </el-menu-item>
         <el-menu-item index="/list">
           <el-icon><List /></el-icon>
-          <template #title>花销列表</template>
+          <template #title>收支明细</template>
         </el-menu-item>
         <el-menu-item index="/stats">
           <el-icon><DataAnalysis /></el-icon>
@@ -36,6 +36,26 @@
           <template #title>设置</template>
         </el-menu-item>
       </el-menu>
+
+      <!-- 快捷入口 -->
+      <div class="sidebar-footer">
+        <el-button
+          type="primary"
+          size="small"
+          style="width: 100%; margin-bottom: 8px;"
+          @click="$router.push('/add')"
+        >
+          <el-icon><Top /></el-icon> 记一笔支出
+        </el-button>
+        <el-button
+          type="success"
+          size="small"
+          style="width: 100%;"
+          @click="$router.push('/add?type=income')"
+        >
+          <el-icon><Bottom /></el-icon> 记一笔收入
+        </el-button>
+      </div>
     </el-aside>
 
     <!-- 主内容区 -->
@@ -52,7 +72,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   Odometer, Plus, List, DataAnalysis,
-  FolderOpened, Setting
+  FolderOpened, Setting, Top, Bottom
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
@@ -63,6 +83,8 @@ const activeMenu = computed(() => route.path)
 .app-sidebar {
   background: #fff;
   border-right: 1px solid #e4e7ed;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-main {
@@ -75,5 +97,10 @@ const activeMenu = computed(() => route.path)
   height: 100%;
   overflow-y: auto;
   padding: 20px;
+}
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid #e4e7ed;
 }
 </style>

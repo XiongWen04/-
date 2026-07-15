@@ -5,6 +5,7 @@ export interface Category {
   parent_id: number | null
   icon: string
   sort_order: number
+  type: string
   created_at: string
   children?: Category[]
 }
@@ -35,9 +36,43 @@ export interface ExpenseQuery {
   category_id?: number
 }
 
+// 收入记录类型
+export interface Income {
+  id: number
+  amount: number
+  category_id: number
+  date: string
+  note: string
+  source: string
+  created_at: string
+  updated_at: string
+  // 联表查询附加字段
+  category_name?: string
+  category_icon?: string
+  parent_category_name?: string
+  parent_category_id?: number
+}
+
+// 收入列表查询参数
+export interface IncomeQuery {
+  page?: number
+  pageSize?: number
+  dateFrom?: string
+  dateTo?: string
+  category_id?: number
+}
+
 // 月度数据
 export interface MonthlyData {
   daily: Record<string, Expense[]>
+  totalAmount: number
+  categoryTotal: { id: number; name: string; icon: string; total: number }[]
+  count: number
+}
+
+// 收入月度数据
+export interface IncomeMonthlyData {
+  daily: Record<string, Income[]>
   totalAmount: number
   categoryTotal: { id: number; name: string; icon: string; total: number }[]
   count: number

@@ -22,7 +22,7 @@ export function initDatabase(): void {
   // 启用 WAL 模式，提升并发性能
   db.pragma('journal_mode = WAL')
 
-  // 创建表
+  // 创建/迁移表
   db.exec(`
     CREATE TABLE IF NOT EXISTS categories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,6 +30,7 @@ export function initDatabase(): void {
       parent_id INTEGER,
       icon TEXT DEFAULT '',
       sort_order INTEGER DEFAULT 0,
+      type TEXT DEFAULT 'expense',
       created_at TEXT DEFAULT (datetime('now', 'localtime')),
       FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE RESTRICT
     );
@@ -46,15 +47,49 @@ export function initDatabase(): void {
       FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
     );
 
+    CREATE TABLE IF NOT EXISTS incomes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      amount REAL NOT NULL CHECK(amount > 0),
+      category_id INTEGER NOT NULL,
+      date TEXT NOT NULL,
+      note TEXT DEFAULT '',
+      source TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now', 'localtime')),
+      updated_at TEXT DEFAULT (datetime('now', 'localtime')),
+      FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
+    );
+
     CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
     CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category_id);
+    CREATE INDEX IF NOT EXISTS idx_incomes_date ON incomes(date);
+    CREATE INDEX IF NOT EXISTS idx_incomes_category ON incomes(category_id);
     CREATE INDEX IF NOT EXISTS idx_categories_parent ON categories(parent_id);
   `)
 
+  // 兼容旧表：确保 type 列存在
+  try {
+    db.exec("ALTER TABLE categories ADD COLUMN type TEXT DEFAULT 'expense'")
+  } catch {
+    // 列已存在，忽略
+  }
+
+  // 在迁移之后创建 type 索引（避免旧表还没有 type 列就建索引）
+  try {
+    db.exec("CREATE INDEX IF NOT EXISTS idx_categories_type ON categories(type)")
+  } catch {
+    // 忽略
+  }
+
   // 检查是否需要初始化预置数据
-  const count = db.prepare('SELECT COUNT(*) as count FROM categories').get() as any
+  const count = db.prepare("SELECT COUNT(*) as count FROM categories WHERE parent_id IS NULL").get() as any
   if (count.count === 0) {
     seedData()
+  } else {
+    // 检查是否需要补充收入分类
+    const incomeCount = db.prepare("SELECT COUNT(*) as count FROM categories WHERE type = 'income' AND parent_id IS NULL").get() as any
+    if (incomeCount.count === 0) {
+      seedIncomeData()
+    }
   }
 }
 
@@ -117,6 +152,44 @@ function seedData(): void {
     ]
 
     for (const cat of categories) {
+      insertCategory.run(cat.name, null, cat.icon, cat.id)
+      cat.children.forEach((child, index) => {
+        insertCategory.run(child.name, cat.id, child.icon || '', (index + 1) * 10)
+      })
+    }
+  })
+
+  transaction()
+}
+
+function seedIncomeData(): void {
+  const insertCategory = db.prepare("INSERT INTO categories (name, parent_id, icon, sort_order, type) VALUES (?, ?, ?, ?, 'income')")
+
+  const transaction = db.transaction(() => {
+    const incomeCategories: { id: number; name: string; icon: string; children: { name: string; icon?: string }[] }[] = [
+      {
+        id: 101, name: '工资', icon: 'money', children: [
+          { name: '月薪' }, { name: '奖金' }, { name: '补贴' }, { name: '兼职' }
+        ]
+      },
+      {
+        id: 102, name: '理财', icon: 'trend-charts', children: [
+          { name: '利息' }, { name: '基金' }, { name: '股票' }, { name: '理财收益' }
+        ]
+      },
+      {
+        id: 103, name: '红包', icon: 'present', children: [
+          { name: '微信红包' }, { name: '节日红包' }, { name: '生日红包' }
+        ]
+      },
+      {
+        id: 104, name: '其他', icon: 'more-filled', children: [
+          { name: '退款' }, { name: '报销' }, { name: '其他收入' }
+        ]
+      }
+    ]
+
+    for (const cat of incomeCategories) {
       insertCategory.run(cat.name, null, cat.icon, cat.id)
       cat.children.forEach((child, index) => {
         insertCategory.run(child.name, cat.id, child.icon || '', (index + 1) * 10)

@@ -4,7 +4,7 @@
       <h2>设置</h2>
     </div>
 
-    <!-- 关于 -->
+    <!-- ====== 关于区域：展示应用名称、版本号和技术栈信息 ====== -->
     <div class="page-card">
       <h3 style="font-size: 15px; color: #303133; margin-bottom: 16px;">关于熊猫记账</h3>
       <el-descriptions :column="1" border>
@@ -15,10 +15,11 @@
       </el-descriptions>
     </div>
 
-    <!-- 数据操作 -->
+    <!-- ====== 数据操作区域：备份数据库和导出数据 ====== -->
     <div class="page-card">
       <h3 style="font-size: 15px; color: #303133; margin-bottom: 16px;">数据管理</h3>
 
+      <!-- 隐私安全提示 -->
       <el-alert
         title="所有数据存储在你的本地电脑上，不会上传到任何服务器。"
         type="info"
@@ -27,16 +28,19 @@
         style="margin-bottom: 16px;"
       />
 
+      <!-- 操作按钮组 -->
       <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <!-- 备份按钮：调用 Electron IPC 将 SQLite 数据库文件复制到文档目录 -->
         <el-button type="primary" @click="handleBackup" :loading="backingUp">
           <el-icon><Download /></el-icon> 备份数据库
         </el-button>
-
+        <!-- 导出按钮：功能预留，尚未实现 -->
         <el-button @click="handleExport">
           <el-icon><Document /></el-icon> 导出数据
         </el-button>
       </div>
 
+      <!-- 备份成功提示：显示备份文件保存路径 -->
       <div v-if="backupPath" style="margin-top: 12px;">
         <el-alert
           :title="`备份成功！文件已保存到：${backupPath}`"
@@ -55,12 +59,22 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Download, Document } from '@element-plus/icons-vue'
 
+/** 备份进行中标记：防止重复点击，同时给按钮添加 loading 动画 */
 const backingUp = ref(false)
+/** 最近一次备份文件保存路径，非空时展示成功提示 */
 const backupPath = ref('')
 
+/**
+ * 备份数据库
+ * @description 通过 Electron IPC 调用主进程的数据库备份功能，
+ * 将当前 SQLite 数据库文件复制到用户文档目录下的备份文件夹，
+ * 备份文件名带时间戳防止覆盖。
+ * 备份成功后在页面上显示输出路径。
+ */
 async function handleBackup() {
   backingUp.value = true
   try {
+    // 调用 electron API bridge 触发主进程备份，返回备份文件的绝对路径
     const result = await window.electronAPI.db.backup()
     backupPath.value = result
     ElMessage.success('备份成功！')
@@ -71,6 +85,11 @@ async function handleBackup() {
   }
 }
 
+/**
+ * 导出数据（功能预留）
+ * @description 计划支持导出为 CSV / Excel 格式，
+ * 目前仅提示用户功能在开发中。
+ */
 async function handleExport() {
   ElMessage.info('导出功能开发中，敬请期待！')
 }

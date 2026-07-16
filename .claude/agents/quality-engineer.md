@@ -106,6 +106,23 @@ skills:
 - 建议优化：X 项
 ```
 
+## 写入质量门禁标记文件
+
+完成所有检查后，将评估结果写入 `.claude/quality-gate/quality-result.json`：
+
+```json
+{
+  "passed": true/false,
+  "grade": "A/B/C/D",
+  "timestamp": "ISO时间",
+  "summary": "整体评价",
+  "issues": ["问题列表"]
+}
+```
+
+**判定标准：** 评分 A 或 B → `passed: true`；评分 C 或 D → `passed: false`
+使用命令行写入文件（使用 Bash）。
+
 ## 评分标准
 
 | 等级 | 标准 |

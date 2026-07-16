@@ -18,3 +18,6 @@ Thumbs.db
 
 # npm
 .npmrc
+
+# 质量门禁标记文件（动态生成，不入库）
+.claude/quality-gate/

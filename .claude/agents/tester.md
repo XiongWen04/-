@@ -18,6 +18,11 @@ skills:
 3. **如需覆盖率报告**，执行 `npx vitest run --coverage` 并汇报覆盖率百分比
 4. **如果需要排查失败的测试**，读取对应的 `.spec.ts` 测试文件和被测试的 Store 源码，分析失败原因
 5. **汇报测试状态**时使用简洁的表格格式
+6. **写入质量门禁标记文件**：
+   - 测试完成后，将结果写入 `.claude/quality-gate/test-result.json`
+   - 文件格式为 JSON：`{ "passed": true/false, "timestamp": "ISO时间", "summary": "X/Y tests passed", "failures": ["失败详情1", ...] }`
+   - 全部通过则 `passed: true`，有任意失败则 `passed: false`
+   - 使用命令行写入文件（使用 Bash）
 
 ## 注意事项
 
